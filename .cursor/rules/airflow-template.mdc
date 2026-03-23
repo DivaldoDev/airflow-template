@@ -1,0 +1,41 @@
+---
+description: Padroes Airflow para DAGs e ETL
+globs: "**/dags/**/*.py,**/scripts/**/*.py"
+alwaysApply: false
+---
+
+# Airflow Template - Padroes
+
+## DAGs
+
+- `catchup=False` e `max_active_runs=1` em toda DAG
+- Tasks idempotentes (re-executaveis sem efeitos colaterais)
+- Nomes de tasks em snake_case descritivos
+
+## Fontes de dados
+
+- **CSV**: Usar `scripts.csv_helpers` (`load_csv`, `save_csv`) — arquivos em `data/`
+- **API**: Usar `scripts.api_helpers` (`fetch_json`, `fetch_json_to_csv`) — credenciais em `API_*`
+- **Banco**: Usar `scripts.db` e `scripts.etl_helpers` (`run_sql_file`, `load_csv_to_db`) — credenciais em `DB_*`
+
+## SQL
+
+- SQL em arquivos separados em `sql/`, nunca inline no Python
+- Um arquivo por operacao logica (extract, transform, load por tabela)
+
+## Conexoes e Seguranca
+
+- Conexoes via variaveis de ambiente (`DB_HOST`, `DB_USER`, etc.), nunca hardcoded
+- Queries parametrizadas (sem concatenacao de strings para SQL)
+
+## Logs
+
+- Usar `logging` do Python com nivel apropriado (INFO, WARNING, ERROR)
+- Logar inicio/fim de tasks e contagens relevantes
+
+## Python
+
+- Python 3.11+ com type hints em funcoes publicas
+- Docstrings em funcoes publicas
+- Todas as queries parametrizadas (psycopg2 com placeholders `%s`)
+- Toda funcao que acessa DB deve usar context manager (`with connection:`)
